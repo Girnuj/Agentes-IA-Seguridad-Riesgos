@@ -229,7 +229,7 @@ public sealed class AgentSafe : BaseAgent
     }
 }
 
-public static class Seccion1_5Demo
+public static class PasosAgent1_5Demo
 {
     public static void DemoRun()
     {
