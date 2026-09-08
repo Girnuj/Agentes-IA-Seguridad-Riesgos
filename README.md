@@ -1,5 +1,6 @@
-# Agentes de IA: Seguridad y Riesgos
+Inglés: [README-EN.md](README-EN.md)
 
+# Agentes de IA: Seguridad y Riesgos
 Proyecto educativo y de demostración diseñado para entender cómo cambia la seguridad cuando un sistema pasa de ser determinista a convertirse en un agente capaz de planificar, ejecutar herramientas y tomar decisiones con autonomía acotada.
 
 Este repositorio no pretende sustituir una arquitectura real de producción, sino ilustrar, con ejemplos sencillos en C# y .NET, los principios clave de seguridad para agentes de IA: validación de objetivos, alcance de plan, control de herramientas, trazabilidad y revisión humana.
