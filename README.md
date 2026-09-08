@@ -1,15 +1,26 @@
-# Agentes de IA - Seguridad Y Riesgos
+# Agentes de IA: Seguridad y Riesgos
 
-### Seguridad y Riesgos en IA. 
-En el pasado, protegíamos software que con todo y bugs era bastante predecible en ejecución. 
-Ahora estamos construyendo agentes que interpretan objetivos, deciden pasos intermedios y ejecutan acciones. 
+Proyecto educativo y de demostración diseñado para entender cómo cambia la seguridad cuando un sistema pasa de ser determinista a convertirse en un agente capaz de planificar, ejecutar herramientas y tomar decisiones con autonomía acotada.
 
-Lo que estamos viendo ahora es un cambio de paradigma en seguridad de software determinista a sistemas agénticos. 
-Y este cambio no es solo cosmético, mueve el problema de seguridad de la periferia al centro de la lógica del sistema. 
+Este repositorio no pretende sustituir una arquitectura real de producción, sino ilustrar, con ejemplos sencillos en C# y .NET, los principios clave de seguridad para agentes de IA: validación de objetivos, alcance de plan, control de herramientas, trazabilidad y revisión humana.
 
 ![Cambio de paradigma en seguridad](./Agentes-IA-Seguridad-Riesgos/Image/CambioEnParadigmaSeguridad/image1.png)
 
 Para este contenido, cuando diga sistema agéntico me refiero al software que no solo responde sino que recibe un objetivo, planifica pasos intermedios, usa herramientas y ejecuta acciones con autonomía acotada por políticas. Esa autonomía acotada es exactamente donde cambian los riesgos. 
+
+## ¿Por qué este proyecto?
+
+En software tradicional, la seguridad se centra en validar entradas, controlar flujos deterministas, autenticar usuarios y autorizar acciones. En una arquitectura agéntica, además de esas capas, aparece una nueva dimensión:
+
+- el agente interpreta objetivos;
+- genera un plan dinámico;
+- selecciona herramientas;
+- almacena contexto o memoria;
+- ejecuta acciones con cierto nivel de autonomía.
+
+Eso introduce riesgos compuestos: una acción individual puede parecer legítima, pero la combinación de pasos, contexto y objetivos puede terminar generando un resultado inseguro.
+
+La idea central del repositorio es mostrar que seguridad en agentes no es solo un problema de prompt o de modelo. Es un problema de arquitectura, gobernanza, control de permisos y auditoría.
 
 ![Sistema agéntico](./Agentes-IA-Seguridad-Riesgos/Image/CambioEnParadigmaSeguridad/image2.png)
 
@@ -179,3 +190,146 @@ Por ejemplo, en este caso, el agente de consulta teniendo acceso a una base de d
 ![abuso de identidad y privilegio](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo3/image2.png)
 
 Dentro de las señales tempranas puedes encontrar intentos de acceso sin justificación, ejecución de acciones de alto privilegio sin un disparador claro y poca separación de roles en el momento de ejecución. Así que una de las formas de mitigar este riesgo es empezar con privilegio mínimo por defecto, credenciales de corto alcance o permisos temporales por tarea y revocación automática al cerrar la acción.
+
+### Riesgo 4: Vulnerabilidades de la cadena de suministro de agentes
+
+Este riesgo aparece cuando confiamos en componentes externos, por ejemplo, modelos, dependencias, datos o integraciones, sin verificarlos con suficiente rigor. Veamos el siguiente ejemplo:
+
+![vulnerabilidades de la cadena de suministro](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo4/image1.png)
+
+Tenemos un caso de MCP o un registro comprometido, el descriptor parece válido, el agente parece normal, pero la acción final ya sale contaminada. 
+
+En un agente basta un cambio en el modelo, en la librería o en el dataset para alterar las decisiones sin tocar su lógica principal. Y es ahí donde está lo peligroso, el sistema parece funcionar, pero su conducta ya está degradada o sesgada. 
+
+![vulnerabilidades de la cadena de suministro](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo4/image2.png)
+
+Las señales tempranas suelen verse después de actualizaciones, por ejemplo, comportamientos inesperados, caída de confiabilidad sin una causa obvia y cambios de salida que son difíciles de explicar.
+
+Como forma para controlar esto inicialmente, debes incluir versionado estricto, trazabilidad de los artefactos, validación de integridad y un proceso de aprobación para cualquier cambio en los componentes críticos.
+
+### Riesgo 5: Ejecución inesperada de código (RCE)
+
+El unexpected code execution, o ejecución inesperada de código, entra en juego cuando el sistema termina ejecutando código o comandos que nunca estuvieron previstos por diseño. Veamos un pequeño ejemplo:
+
+![vulnerabilidades de la cadena de suministro](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo5/image1.png)
+
+Lo que vemos es un prompt que tiene un comando embebido, y lo que está diciendo este comando es borrar todo lo que esté dentro de la carpeta producción.
+Esto entra como texto normal y termina borrando los datos de producción. 
+
+En un agente, el patrón más crítico es mezclar generación y ejecución sin ningún tipo de barreras. En ese escenario, el agente puede construir instrucciones peligrosas o interpretar entrada normal como código ejecutable.
+
+![vulnerabilidades de la cadena de suministro](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo5/image2.png)
+
+¿Cuáles son las señales que te pueden alertar? 
+
+Comandos de sistema fuera de contexto, scripts generados en tareas que no lo requieren y accesos inesperados a recursos del host. 
+
+Parte del control inicial que puedes hacer es utilizar un sandbox obligatorio, es decir, mantén a tu agente dentro de una caja y que solo pueda ejecutar acciones dentro del alcance de esa caja. También tienes política de ejecución cerrada, lista permitida de operaciones y revisión previa en acciones de alto impacto.
+
+### Riesgo 6: Envenenamiento de memoria y contexto
+
+El memory and context poisoning es otro de los diez riesgos en sistemas agénticos mencionados por OWASP y se trata de lo siguiente.
+
+El agente conserva información incorrecta y luego decide sobre esa base contaminada. Veamos un pequeño ejemplo:
+
+![memory and context poisoning](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo6/image1.png)
+
+En un agente, una entrada maliciosa puede quedar guardada como si fuera un hecho y reaparecer en tareas posteriores. Entonces, el problema no es solo una respuesta mala puntual, sino una degradación acumulada de decisiones.
+
+![memory and context poisoning](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo6/image2.png)
+
+Las señales tempranas son repetitivas, tenemos inconsistencias históricas, referencias a datos no verificables y repetición de supuestos falsos en contextos distintos. Por ejemplo, vamos a tener repetidas veces que el precio del vuelo equis es de 150 dólares cuando, en realidad, ya puede que no sea así. 
+
+Como parte de los controles iniciales, tienes que separar memoria confiable de la memoria no confiable, validar fuentes antes de persistir y aplicar caducidad de contexto para reducir contaminación de largo plazo.
+
+### Riesgo 7: Comunicación insegura entre agentes
+
+Otro de los riesgos listados por OWASP en sistemas agenticos es el insecure inter-agent communication, o comunicación insegura entre agentes.
+
+Aunque habla de comunicación entre agentes, en un agente aplica cuando depende de varios servicios externos. Veamos el siguiente ejemplo:
+
+![insecure inter-agent communication](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo7/image1.png)
+
+Aquí vamos a ver que tenemos a dos agentes conectados por HTTP sin ningún tipo de cifrado, con un atacante en el medio que modifica el mensaje y sesga la decisión final. 
+
+Cuando estos intercambios no están bien autenticados, validados y protegidos, el agente termina consumiendo mensajes inseguros y tomando decisiones sobre datos manipulados. 
+
+![insecure inter-agent communication](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo7/image2.png)
+
+Las señales tempranas se ven en tres frentes: tráfico sensible sin protección adecuada, respuesta sin validación de esquema y confianza implícita en canales externos. 
+
+Para controlar este riesgo, debes incluir autenticación fuerte entre componentes, cifrado en tránsito y validación estricta de contratos de mensajes antes de procesar los datos.
+
+### Riesgo 8: Fallas en cascada
+
+Esto ocurre cuando un error local se propaga y acaba afectando disponibilidad, integridad o control operativo. 
+
+![failures in cascade](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo8/image1.png)
+
+En este ejemplo, lo vemos como un efecto dominó. Al principio, el agente tiene un análisis de mercado contaminado que luego se propaga en un posicionamiento y ejecución, amplificando el error, y cumplimiento, sin alertar a tiempo. 
+
+Como puedes ver, los fallos en cascada aparecen cuando faltan límites de reintento, aislamiento de fallos o mecanismos de freno. Entonces, una mala decisión inicial se replica en cadena porque la automatización acelera la propagación. 
+
+![failures in cascade](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo8/image2.png)
+
+Las señales tempranas son bastante visibles, hay un incremento progresivo de errores, saturación de herramientas dependientes y una degradación acelerada del sistema. 
+
+¿Cómo puedes mitigarlo?
+
+Tienes que combinar la contención y la recuperación, tienes que tener los llamados circuit breakers, límites de reintento con backoff, aislamiento por dominios de fallo y rutas claras de rollback.
+
+### Riesgo 9: Explotación de confianza agente-humano
+
+El siguiente riesgo se llama explotación de confianza agente-humano, y según OWASP aparece cuando el sistema o las personas alrededor del sistema confían de más en lo que el agente recomienda o ejecuta. 
+
+![explotación de confianza agente-humano](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo9/image1.png)
+
+En este ejemplo, vemos que tenemos una factura manipulada, el agente recomienda un pago urgente con una explicación bastante convincente y el humano aprueba sin ningún tipo de verificación independiente porque, bueno, pues confía en su agente de finanzas.
+
+En el agente, el patrón típico es la autoridad percibida, el resultado suena convincente y se acepta sin validación suficiente, incluso en decisiones de alto impacto, como pagar una factura de 48 500 dólares en este caso. 
+
+![explotación de confianza agente-humano](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo9/image2.png)
+
+Las señales tempranas incluyen decisiones críticas sin revisión, explicaciones poco trazables y ausencia de indicadores de incertidumbre en salidas sensibles, lo que se traduce en ningún tipo de fricción. 
+
+Dentro del control inicial hay que exigir fricción inteligente, con algo llamado human-in-the-loop. Human-in-the-loop añade un paso extra en el cual el humano tiene que aprobar o rechazar alguna acción propuesta por el agente. 
+
+Otro control inicial es la explicabilidad mínima obligatoria y comunicación explícita del agente.
+
+### Riesgo 10: Agentes "Rogue"
+
+Cerramos la lista de riesgos en agentes con los llamados agentes «rogue». Aquí ocurre que el agente empieza a operar con objetivos divergentes o fuera de los controles previstos.
+
+![agentes "rogue"](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo10/image1.png)
+
+En el ejemplo, tenemos varias etapas. El agente empieza optimizando una serie de costos en la nube y termina eliminando los backups de producción porque no tiene límites ni un kill switch efectivo. 
+
+Como ves, en un agente, este riesgo suele verse como una derivación gradual. Cada iteración parece menor, pero al acumularse terminan en acciones que no estaban autorizadas ni por diseño ni por política del sistema.
+
+![agentes "rogue"](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo10/image2.png)
+
+Las señales tempranas son especialmente importantes aquí: hay dificultad para detener tareas, aparecen objetivos no solicitados y hay una desviación progresiva frente al objetivo inicial. 
+
+Para controlar este riesgo, tiene que existir el llamado kill switch. En cualquier momento, tú, como humano, tienes que ser capaz de matar al agente y cortar esa ejecución. Tiene que haber límites de tiempo y de alcance y auditoría continua de alineación entre el objetivo, el plan y la acción.
+
+## Conceptos clave que se aplican en el código
+### Política
+Se define una lista de términos bloqueados para impedir que ciertos objetivos sean ejecutados.
+### Alcance permitido
+Se limita el conjunto de pasos o herramientas que el agente puede ejecutar.
+### Tool allowlist
+No todas las herramientas están disponibles en todos los contextos; se valida qué puede usar el agente.
+### Auditoría
+Se registran planes y acciones ejecutadas para permitir trazabilidad posterior.
+### Privilegio mínimo
+El agente solo debe tener acceso a las herramientas y permisos necesarios para cumplir la tarea.
+### Revisión humana
+Si una acción es de alto impacto, debe requerir validación explícita antes de ejecutarse.
+### Reflexión final
+La gran diferencia entre un sistema tradicional y un agente no es solo que "piensa más" o que utiliza un LLM. La diferencia importante es que el agente puede transformar un objetivo en una secuencia de decisiones, herramientas y efectos reales sobre sistemas y datos.
+Cuando ese comportamiento se vuelve dinámico y autónomo, la seguridad deja de ser un problema exclusivo de validación y pasa a ser un problema de control de agencia.
+Este repositorio busca precisamente eso: ayudar a entender, desde un enfoque práctico y visual, por qué los controles de seguridad deben evolucionar junto con la autonomía del software.
+### Licencia
+Este proyecto se utiliza como material didáctico. Revisa y ajusta la licencia según el uso real que le des al contenido.
+### Nota didáctica
+El ejemplo está pensado para fines educativos. Si lo usas en una presentación, un taller o una clase, puedes presentarlo como una introducción visual a la seguridad en agentes de IA y a la necesidad de combinar seguridad clásica con controles específicos para sistemas con agencia.
