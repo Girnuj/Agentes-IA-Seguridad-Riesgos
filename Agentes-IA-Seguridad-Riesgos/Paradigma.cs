@@ -84,7 +84,6 @@ public static class ParadigmaDemo
     public static string ExecuteQuery(string userInput) =>
         $"Consulta OK para input: {userInput}";
 
-
     public static bool ValidateObjective(string objective, PolicyRules? policy)
     {
         var blockedTerms = policy?.BlockedTerms ?? [];

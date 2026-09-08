@@ -113,3 +113,69 @@ Si el impacto es alto, la respuesta espera aprobación humana antes de salir. Lo
 Es decir, que el agente no es el último punto de decisión en acciones de alto impacto. Como bien te comenté en el ejemplo anterior, este ejemplo se enfoca directamente en los pasos de ejecución de un agente y no 100 % en la parte autónoma y de interacción con una LLM de un agente. 
 
 Lo que quiero que entiendas es que, a pesar de que el agente es autónomo y ejecuta un plan y hace todo ese tipo de cosas por su cuenta, todavía nosotros tenemos una serie de controles que podemos ejecutar para que estas ejecuciones sean seguras.
+
+# OWASP Top 10 para aplicaciones agénticas
+
+A continuación, quiero que hablemos de los riesgos más importantes en los sistemas agénticos según OWASP.
+
+### Riesgo 1: Cambiando el comportamiento de un agente
+
+Vamos a empezar por el cambio de comportamiento de un agente. 
+El agent behavior hijack es uno de los diez riesgos definidos por OWASP..
+
+![agent behavior hijack](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo1/image1.png)
+
+Aquí el problema no es que el agente falle al azar, sino que lo desvían de su objetivo y termina operando con una lógica que no era la esperada. 
+En un sistema con agente, esto suele pasar cuando entran instrucciones conflictivas o maliciosas por la entrada o por contexto.
+Entonces, aunque el agente parezca obediente, en realidad cambia prioridades y termina poniendo una instrucción inyectada por encima de la política del sistema.
+
+¿Cómo puedes detectarlo de forma temprana? 
+
+![agent behavior hijack](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo1/image2.png)
+
+Lo primero es inconsistencia en las acciones que no tienen sentido con las del objetivo principal. 
+
+![agent behavior hijack](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo1/image3.png)
+
+Luego también aparecen saltos de contexto sin justificación y además recibes respuestas con mucha seguridad pero poca alineación funcional. 
+
+¿Cómo puedes controlarlo?
+
+Tienes que validar el objetivo antes de planificar, bloquear instrucciones contradictorias y comprobar la alineación entre el objetivo, el plan y acción en cada punto crítico.
+
+### Riesgo 2: Mal uso y explotación de herramientas
+
+Este se llama mal uso y explotación de herramientas, o tool misuse and exploitation. 
+
+![tool misuse and exploitation](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo2/image1.png)
+
+En este ejemplo, vemos que tenemos un bot de soporte que tenía que consultar pedidos, pero porque tenía sobreprivilegios termina ejecutando un reembolso no autorizado. Entonces, aquí el riesgo aparece cuando el agente usa una herramienta que es válida, por ejemplo, esta API, pero la usa de forma insegura, fuera de contexto o con parámetros peligrosos. 
+
+En un agente, el patrón más común es este, la herramienta es legítima, el uso es ilegítimo. Es decir, la API existe para una tarea válida, pero el agente la invoca con un contexto no permitido o con argumentos que habilitan acciones de alto impacto. 
+
+![tool misuse and exploitation](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo2/image2.png)
+
+Dentro de las señales tempranas, lo primero que puedes notar es llamadas poco frecuentes en momentos raros, secuencias que no estaban previstas, picos de uso en operaciones sensibles y parámetros que no encajan con la intención original. 
+
+¿Cómo puedes controlarlo? 
+
+Tienes que combinar tres cosas: una lista permitida por contexto, validación de parámetros antes de ejecutar y límites claros de capacidad por tipo de herramienta.
+
+### Riesgo 3: Abuso de identidad y privilegio
+
+El siguiente riesgo del cual quiero hablarte hoy es abuso de identidad y privilegio. 
+
+Yo creo que este es uno de los riesgos que es muy fácil de entender pero muy caro de ignorar. 
+Básicamente, el agente tiene más permisos de los que necesita, o bien los usa fuera del propósito de la tarea.
+
+![abuso de identidad y privilegio](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo3/image1.png)
+
+Si vemos este pequeño ejemplo, en este caso tenemos un agente de finanzas que delega permisos completos a un agente de consulta, y con este privilegio heredado se extraen datos de Recursos Humanos y de Legal que, evidentemente, el agente de consulta no debía haber podido ver. 
+
+En un agente esto se ve como el sobreprivilegio. Por ejemplo, cuando tienes tokens con alcances demasiado amplios, permisos administrativos por defecto o acceso a recursos que no tienen relación con la tarea actual. 
+
+Por ejemplo, en este caso, el agente de consulta teniendo acceso a una base de datos bastante restrictiva. 
+
+![abuso de identidad y privilegio](./Agentes-IA-Seguridad-Riesgos/Image/OWASP/Riesgo3/image2.png)
+
+Dentro de las señales tempranas puedes encontrar intentos de acceso sin justificación, ejecución de acciones de alto privilegio sin un disparador claro y poca separación de roles en el momento de ejecución. Así que una de las formas de mitigar este riesgo es empezar con privilegio mínimo por defecto, credenciales de corto alcance o permisos temporales por tarea y revocación automática al cerrar la acción.
