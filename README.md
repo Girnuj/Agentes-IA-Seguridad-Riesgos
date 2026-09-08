@@ -331,6 +331,6 @@ La gran diferencia entre un sistema tradicional y un agente no es solo que "pien
 Cuando ese comportamiento se vuelve dinámico y autónomo, la seguridad deja de ser un problema exclusivo de validación y pasa a ser un problema de control de agencia.
 Este repositorio busca precisamente eso: ayudar a entender, desde un enfoque práctico y visual, por qué los controles de seguridad deben evolucionar junto con la autonomía del software.
 ### Licencia
-Este proyecto se utiliza como material didáctico. Revisa y ajusta la licencia según el uso real que le des al contenido.
+Este proyecto se utiliza como material didáctico.
 ### Nota didáctica
 El ejemplo está pensado para fines educativos. Si lo usas en una presentación, un taller o una clase, puedes presentarlo como una introducción visual a la seguridad en agentes de IA y a la necesidad de combinar seguridad clásica con controles específicos para sistemas con agencia.

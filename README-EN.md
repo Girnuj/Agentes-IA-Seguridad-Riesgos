@@ -349,7 +349,7 @@ When that behavior becomes dynamic and autonomous, security stops being a proble
 This repository seeks exactly that: to help understand, from a practical and visual perspective, why security controls must evolve alongside the autonomy of the software.
 
 ### License
-This project is used as educational material. Review and adjust the license according to the actual use you give to the content.
+This project is used as educational material.
 
 ### Didactic note
 The example is intended for educational purposes. If you use it in a presentation, workshop, or class, you can present it as a visual introduction to security in AI agents and to the need to combine classic security with specific controls for systems with agency.
